@@ -1,0 +1,35 @@
+body {
+    background: #e5e5e5;
+    min-height: 100vh;
+    min-width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+/* .container-fluid {
+  max-width: 1400px;
+  max-height: 700px;
+  width: 100%;
+  height: 95vh;
+  background: #fff;
+  /* border-radius: 18px; */
+ /* box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+} */
+
+.truncate-text {
+    white-space: nowrap; /* Prevent text from wrapping to the next line */
+    overflow: hidden; /* Hide the overflowed text */
+    text-overflow: ellipsis; /* Add ellipsis (...) for overflowed text */
+    max-width: 200px; /* Set a maximum width for the text container */
+    min-width: 100px; /* Set a minimum width for the text container */
+    width: auto;
+    display: inline-block; /* Ensure the element respects the max-width */
+}
+  
+
+

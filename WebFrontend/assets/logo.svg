@@ -1,0 +1,9 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <title>Lynk logo icon</title>
+  <g transform="translate(0, 8)">
+    <path d="M22 34a10 10 0 0 1 0-20 4 4 0 0 1 0 8 6 6 0 1 0 0 12z" fill="#2a96f9" />
+    <path d="M42 14a10 10 0 0 1 0 20 4 4 0 0 1 0-8 6 6 0 1 0 0-12z" fill="#2a96f9" />
+    <path d="M28 27l8-8" stroke="#2a96f9" stroke-width="3" stroke-linecap="round" />
+    <path d="M28 21l8 8" stroke="#2a96f9" stroke-width="3" stroke-linecap="round" />
+  </g>
+</svg>

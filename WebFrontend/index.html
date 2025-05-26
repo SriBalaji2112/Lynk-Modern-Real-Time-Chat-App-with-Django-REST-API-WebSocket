@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Lynk Chat</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link  href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="styles/splash_screen.css">
+    <link rel="stylesheet" href="styles/home.css">
+    <link rel="stylesheet" href="styles/chat.css">
+    <link rel="stylesheet" href="styles/modals.css">
+    <link rel="stylesheet" href="styles/media.css">
+</head>
+<body>
+  <!-- Splash Screen -->
+<div id="splashScreen" style="position:fixed;z-index:9999;top:0;left:0;width:100vw;height:100vh;background:linear-gradient(135deg,#5df2d0,#2a96f9);display:flex;align-items:center;justify-content:center;">
+  <div class="logo-container" aria-label="Lynk chat app logo">
+  <svg viewBox="0 0 200 100" width="120" height="60" style="overflow:visible;">
+  <defs>
+    <!-- Tail gradient for cyan -->
+    <radialGradient id="tailCyan" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#5df2d0" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#5df2d0" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Tail gradient for blue -->
+    <radialGradient id="tailBlue" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#2a96f9" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#2a96f9" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Blur filter for tail -->
+    <filter id="tailBlur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="18"/>
+    </filter>
+  </defs>
+  <!-- Infinity path -->
+  <path id="infinityPath" d="M 30,50 C 30,10 90,10 100,50 S 170,90 170,50 110,10 100,50 S 30,90 30,50" 
+        fill="none" stroke="#fff" stroke-width="6" opacity="0.25"/>
+  <!-- Cyan tail -->
+  <ellipse id="tail1" rx="32" ry="16" fill="url(#tailCyan)" filter="url(#tailBlur)">
+    <animateMotion dur="2.5s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1">
+      <mpath href="#infinityPath"/>
+    </animateMotion>
+  </ellipse>
+  <!-- Blue tail -->
+  <ellipse id="tail2" rx="32" ry="16" fill="url(#tailBlue)" filter="url(#tailBlur)">
+    <animateMotion dur="2.5s" repeatCount="indefinite" keyPoints="0.5;1.5" keyTimes="0;1">
+      <mpath href="#infinityPath"/>
+    </animateMotion>
+  </ellipse>
+  <!-- Animated circles -->
+  <circle r="8" fill="#5df2d0">
+    <animateMotion dur="2.5s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1">
+      <mpath href="#infinityPath"/>
+    </animateMotion>
+  </circle>
+  <circle r="8" fill="#2a96f9">
+    <animateMotion dur="2.5s" repeatCount="indefinite" keyPoints="0.5;1.5" keyTimes="0;1">
+      <mpath href="#infinityPath"/>
+    </animateMotion>
+  </circle>
+</svg>
+  <div class="text" style="font-size:3.2rem;font-weight:600;color:white;letter-spacing:0.08em;text-shadow:0 2px 8px rgba(0,0,0,0.2),0 0 4px rgba(255,255,255,0.6);font-family:'Poppins',sans-serif;">Lynk</div>
+</div>
+</div>
+<div class="container-fluid">
+  <!-- Video Call Modal -->
+<div id="videoCallModal" class="modal" tabindex="-1" style="display:none;">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center">
+      <div class="modal-header p-2 align-items-center border-0"
+          style="position:absolute;top:0;left:0;z-index:10;width:auto;min-width:260px;max-width:60vw;background:rgba(0,0,0,0.45);border-radius:0 0 16px 0;">
+        <img id="videoCallProfilePic" src="https://via.placeholder.com/48"
+            class="rounded-circle me-2" style="width:48px;height:48px;object-fit:cover;">
+        <div class="d-flex flex-column align-items-start">
+          <span id="videoCallProfileName" class="fw-bold text-white" style="font-size:1.1em;">User Name</span>
+          <span id="videoCallStatus" class="text-light" style="font-size:0.95em;">Calling...</span>
+          <span id="videoCallTimer" class="text-success fw-bold" style="font-size:1em; display:none;">00:00</span>
+        </div>
+      </div>
+      <div class="modal-body p-0" style="position:relative; width:100%; height:100%;">
+        <video id="remoteVideo" autoplay playsinline style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;z-index:1;background:#000;"></video>
+        <video id="localVideo" autoplay muted playsinline style="width:160px;height:120px;position:absolute;bottom:24px;right:24px;border-radius:12px;z-index:2;background:#222;box-shadow:0 2px 8px rgba(0,0,0,0.3);border:2px solid #fff;"></video>
+        <div class="mt-3 d-flex justify-content-center gap-3" style="position:absolute;bottom:24px;left:24px;z-index:3;">
+          <button class="btn btn-success btn-lg" id="attendVideoCallBtn" style="display:none;" onclick="attendVideoCall()">
+            <i class="fas fa-video"></i>
+          </button>
+          <button class="btn btn-danger btn-lg" onclick="endVideoCall()">
+            <i class="fas fa-phone-slash"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+  <!-- Audio Call Modal -->
+<div id="audioCallModal" class="modal" tabindex="-1" style="display:none;">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center">
+      <div class="modal-header flex-column align-items-center border-0">
+        <img id="audioCallProfilePic" src="https://via.placeholder.com/80" class="rounded-circle mb-2" style="width:80px;height:80px;object-fit:cover;">
+        <h5 class="modal-title mb-1" id="audioCallProfileName">User Name</h5>
+        <span id="audioCallStatus" class="text-secondary mb-2">Calling...</span>
+        <div id="audioCallTimer" class="text-success fw-bold" style="font-size:1.1em; display:none;">00:00</div>
+      </div>
+      <div class="modal-body">
+        <audio id="remoteAudio" autoplay></audio>
+        <div id="audioCallActions" class="mt-3 d-flex justify-content-center gap-3">
+          <button class="btn btn-success btn-lg" id="attendCallBtn" style="display:none;" onclick="attendAudioCall()">
+            <i class="fas fa-phone"></i>
+          </button>
+          <button class="btn btn-danger btn-lg" onclick="endAudioCall()">
+            <i class="fas fa-phone-slash"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+  <!-- Profile Crop Modal -->
+<div id="cropModal" class="modal" tabindex="-1" style="display:none;">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Crop Profile Picture</h5>
+        <button type="button" class="btn-close" onclick="closeCropModal()"></button>
+      </div>
+      <div class="modal-body text-center">
+        <img id="cropImage" style="max-width:100%; max-height:300px;" />
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeCropModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="applyCrop()">Set Profile Picture</button>
+      </div>
+    </div>
+  </div>
+</div>
+  <div id="deleteMenuModal" class="modal" tabindex="-1" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Delete Message</h5>
+          <button type="button" class="btn-close" onclick="closeDeleteMenu()"></button>
+        </div>
+        <div class="modal-body">
+          <p>What would you like to do with this message?</p>
+          <div id="deleteMenuOptions"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeDeleteMenu()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="mediaViewer" class="media-viewer hidden">
+    <button class="btn btn-sm btn-outline-secondary close-media-btn" onclick="closeMediaViewer()">Close</button>
+    <div id="mediaContent" class="media-content"></div>
+  </div>
+  <!-- Friends Modal -->
+<div id="friendsModal" class="modal" tabindex="-1" style="display: none;">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Friends</h5>
+        <button type="button" class="btn-close" onclick="closeFriendsModal()"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Tabs Navigation -->
+        <ul class="nav nav-tabs" id="friendsTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="add-friends-tab" data-bs-toggle="tab" data-bs-target="#add-friends" type="button" role="tab" aria-controls="add-friends" aria-selected="true">Add Friends</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="manage-friends-tab" data-bs-toggle="tab" data-bs-target="#manage-friends" type="button" role="tab" aria-controls="manage-friends" aria-selected="false" onclick="fetchManageFriends()">Manage Friends</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="requested-friends-tab" data-bs-toggle="tab" data-bs-target="#requested-friends" type="button" role="tab" aria-controls="requested-friends" aria-selected="false" onclick="fetchRequestedFriends()">Requested Friends</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="view-requests-tab" data-bs-toggle="tab" data-bs-target="#view-requests" type="button" role="tab" aria-controls="view-requests" aria-selected="false" onclick="fetchViewRequests()">View Requests</button>
+          </li>
+        </ul>
+
+        <!-- Tabs Content -->
+        <div class="tab-content" id="friendsTabContent">
+          <!-- Add Friends Tab -->
+          <div class="tab-pane fade show active" id="add-friends" role="tabpanel" aria-labelledby="add-friends-tab">
+            <div class="mt-3">
+              <div class="mt-3 position-relative">
+                <label for="friendUsername" class="form-label">Username</label>
+                <input type="text" id="friendUsername" class="form-control" placeholder="Search id name with @example" oninput="handleAddFriendSearch(event)" />
+                <div id="addFriendDropdown" class="dropdown-menu w-100" style="display: none;"></div>
+              </div>
+              <button class="btn btn-primary mt-3" onclick="sendFriendRequest()">Request</button>
+            </div>
+          </div>
+
+          <!-- Manage Friends Tab -->
+          <div class="tab-pane fade" id="manage-friends" role="tabpanel" aria-labelledby="manage-friends-tab">
+            <div class="mt-3">
+              <ul id="manageFriendsList" class="list-group">
+                <!-- Dynamically populate friends list -->
+              </ul>
+            </div>
+          </div>
+
+          <!-- Requested Friends Tab -->
+          <div class="tab-pane fade" id="requested-friends" role="tabpanel" aria-labelledby="requested-friends-tab">
+            <div class="mt-3">
+              <ul id="requestedFriendsList" class="list-group">
+                <!-- Dynamically populate requested friends list -->
+              </ul>
+            </div>
+          </div>
+
+          <!-- View Requests Tab -->
+          <div class="tab-pane fade" id="view-requests" role="tabpanel" aria-labelledby="view-requests-tab">
+            <div class="mt-3">
+              <ul id="viewRequestsList" class="list-group">
+                <!-- Dynamically populate incoming friend requests -->
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeFriendsModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Profile Popup Modal -->
+<div id="profileModal" class="modal" tabindex="-1" style="display: none;">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Profile</h5>
+        <button type="button" class="btn-close" onclick="closeProfileModal()"></button>
+      </div>
+      <div class="modal-body text-center">
+        <div class="mb-3">
+          <img id="profilePicture" src="https://via.placeholder.com/100" class="rounded-circle" alt="Profile Picture" style="width: 100px; height: 100px; object-fit: cover; cursor: pointer;" onclick="editProfilePicture()" />
+          <button class="btn btn-sm btn-outline-secondary mt-2" onclick="document.getElementById('profilePictureInput').click()"><i class="fas fa-edit"></i></button>
+          <input type="file" id="profilePictureInput" class="d-none" accept="image/*" onchange="updateProfilePicture(event)" />
+        </div>
+        <div class="mb-3">
+        <label for="profileUsername" class="form-label">Username</label>
+        <div class="d-flex align-items-center">
+          <span id="profileUsername" class="flex-grow-1">Username</span>
+          <button class="btn btn-sm btn-outline-primary" onclick="editField('profileUsername')">
+            <i class="fas fa-edit"></i>
+          </button>
+        </div>
+      </div>
+        <div class="text-start">
+          <div class="mb-3">
+            <label for="profileName" class="form-label">Name</label>
+            <div class="d-flex align-items-center">
+              <span id="profileName" class="flex-grow-1">John Doe</span>
+              <button class="btn btn-sm btn-outline-primary" onclick="editField('profileName')"><i class="fas fa-edit"></i></button>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="profileEmail" class="form-label">Email</label>
+            <div class="d-flex align-items-center">
+              <span id="profileEmail" class="flex-grow-1">johndoe@example.com</span>
+              <button class="btn btn-sm btn-outline-primary" onclick="editField('profileEmail')"><i class="fas fa-edit"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeProfileModal()">Close</button>
+        <button type="button" class="btn btn-primary" onclick="updateProfile()">Update</button>
+      </div>
+    </div>
+  </div>
+</div>
+  <div class="row" style="height: 100vh; min-height: 0;">
+    <!-- Left Chat List -->
+    <div class="col-md-4 chat-list p-0">
+      <div class="chat-header d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center">
+          <img id="mainProfilePicture" src="https://via.placeholder.com/40" class="rounded-circle me-2" onclick="openProfileModal()" width="50px" height="50px" />
+          <h5 class="m-0" id="AppName">Lynk</h5>
+        </div>
+        <div class="ms-auto d-flex align-items-center gap-2">
+          <button class="btn btn-sm btn-outline-primary" onclick="openFriendsModal()">
+            <i class="fas fa-user-plus"></i>
+          </button>
+          <button class="btn btn-sm btn-outline-danger" onclick="logout()" title="Logout">
+            <i class="fas fa-sign-out-alt"></i>
+          </button>
+        </div>
+      </div>
+      <div class="p-4">
+        <div class="position-relative">
+          <input type="text" id="searchInput" class="form-control mb-3" placeholder="Search..." oninput="handleSearchInput(event)" />
+          <div id="searchDropdown" class="dropdown-menu w-100" style="display: none;"></div>
+        </div>
+        <div id="userList">
+          <div class="chat-user p-2 border-bottom d-flex justify-content-between align-items-center" onclick="loadChat(1)">
+            <div class="d-flex align-items-center">
+              <img src="https://via.placeholder.com/40" class="rounded-circle me-2" />
+              <div>
+                <div><strong>User 1</strong></div>
+                <div class="text-muted chat-last-message" style="font-size: 0.9em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;">Last message preview...</div>
+              </div>
+            </div>
+            <small class="text-muted">10:45 AM</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Chat Window -->
+    <div class="col-md-8 p-0 d-flex flex-column chat-window">
+      <div class="user-header d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+          <img src="https://via.placeholder.com/40" class="rounded-circle me-2" id="chatHeaderProfile"/>
+          <div>
+            <h6 id="chatUserName" class="mb-0">Select a user</h6>
+            <small>Online</small>
+          </div>
+        </div>
+        <div>
+          <button class="btn btn-sm btn-outline-secondary me-2" id="audioCallBtn"><i class="fas fa-phone-alt"></i></button>
+          <button class="btn btn-sm btn-outline-secondary" id="videoCallBtn"><i class="fas fa-video"></i></button>
+        </div>
+      </div>
+      <div class="chat-body message-container flex-grow-1" id="chatBody">
+        <div class="d-flex flex-column align-items-center justify-content-center h-100">
+          <img src="assets/logo.svg" alt="Welcome" style="width:200px;opacity:0.9;">
+          <h4 class="mt-3 text-secondary">Welcome to Lynk Messenger</h4>
+          <p class="text-muted">Select a chat from the left to start messaging.</p>
+        </div>
+      </div>
+      <div class="typing-indicator" id="typingIndicator">
+          <div class="typing-dots">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <span class="typing-text">is typing...</span>
+        </div>
+      <div class="chat-footer">
+        <div id="replyPreview" class="reply-preview d-none align-items-center mb-2">
+          <button  utton type="button" class="btn btn-link text-danger p-0 me-2" onclick="cancelReply()" style="font-size:1.5rem;">&times;</button>
+          <div>
+            <div id="replyPreviewText" class="reply-preview-text"></div>
+          </div>
+        </div>
+        <div class="d-flex align-items-center">
+          <div id="recordingPopup" style="display: none;" class="recording-popup">
+              <canvas id="waveform" width="300" height="50"></canvas>
+              <div class="recording-controls">
+                <span id="recordTimer">0s</span>
+                <button id="pauseBtn"><i class="fas fa-pause"></i></button>
+                <button id="sendBtn"><i class="fas fa-paper-plane"></i></button>
+                <button id="cancelBtn"><i class="fas fa-times"></i></button>
+              </div>
+            </div>
+            <div id="emojiContainer">
+              <emoji-picker id="emoji-picker"></emoji-picker>
+            </div>
+            <button class="btn btn-outline-secondary me-2" id="emojiBtn"><i class="fas fa-smile"></i></button>
+            <input type="file" id="fileInput" class="d-none" onchange="handleAttachment(event)">
+            <button class="btn btn-outline-secondary me-2" onclick="document.getElementById('fileInput').click()"><i class="fas fa-paperclip"></i></button>
+            <textarea id="messageInput" class="form-control me-2" placeholder="Type a message..." rows="1" style="resize:none;"></textarea>
+            <button class="btn btn-primary me-2" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+            <button class="btn btn-outline-secondary" id="recordBtn"><i class="fas fa-microphone"></i></button>
+          </div>
+        </div>
+      </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
+<script src="scripts/envs.js"></script>
+<script src="scripts/auth.js"></script>
+<script src="scripts/conn.js"></script>
+<script src="scripts/profile.js"></script>
+<script src="scripts/chat.js"></script>
+<script src="scripts/messages.js"></script>
+<script src="scripts/menus.js"></script>
+<script src="scripts/search.js"></script>
+<script src="scripts/recorder.js"></script>
+<script src="scripts/media.js"></script>
+<script src="scripts/handle_incoming_messages.js"></script>
+<script src="scripts/handle_outgoing_messages.js"></script>
+<script src="scripts/attachments.js"></script>
+<script src="scripts/call.js"></script>
+<script src="scripts/emojis.js"></script>
+<script src="scripts/friends.js"></script>
+<script src="scripts/splash_screen.js"></script>
+<script src="scripts/initial.js"></script>
+
+</body>
+</html>

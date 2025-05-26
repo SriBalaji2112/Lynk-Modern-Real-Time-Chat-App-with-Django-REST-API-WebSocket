@@ -1,0 +1,17 @@
+#splashScreen {
+  transition: opacity 0.5s;
+}
+#splashScreen.hide {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes floatLogo {
+  0%   { transform: translateY(0); }
+  50%  { transform: translateY(-18px); }
+  100% { transform: translateY(0); }
+}
+
+.logo-container svg {
+  animation: floatLogo 2.2s ease-in-out infinite;
+}
